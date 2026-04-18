@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>批量导出附件</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --card: #111b2e;
+        --muted: #8aa0c6;
+        --text: #e7efff;
+        --accent: #5aa2ff;
+        --danger: #ff5a7a;
+        --border: rgba(255, 255, 255, 0.08);
+      }
+      body {
+        margin: 0;
+        padding: 12px;
+        width: 360px;
+        background: linear-gradient(180deg, var(--bg), #070c16);
+        color: var(--text);
+        font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      }
+      h1 {
+        font-size: 14px;
+        margin: 0 0 10px 0;
+        letter-spacing: 0.2px;
+      }
+      label {
+        display: block;
+        margin: 10px 0 6px 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 9px 10px;
+        outline: none;
+      }
+      input[type="file"] {
+        width: 100%;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .btns {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      button {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 10px 10px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 1;
+      }
+      button.primary {
+        background: linear-gradient(180deg, rgba(90, 162, 255, 0.95), rgba(57, 125, 255, 0.8));
+        border-color: rgba(90, 162, 255, 0.55);
+      }
+      button.danger {
+        background: rgba(255, 90, 122, 0.15);
+        border-color: rgba(255, 90, 122, 0.35);
+        color: #ffd6de;
+      }
+      .hint {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .status {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.18);
+        white-space: pre-wrap;
+        max-height: 140px;
+        overflow: auto;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+      }
+      a {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>批量导出 Word 附件</h1>
+
+      <label>导入表格（.xlsx / .csv）</label>
+      <input id="file" type="file" accept=".xlsx,.xls,.csv" />
+
+      <label>URL 模板（用 {id} 占位）</label>
+      <input
+        id="urlTemplate"
+        type="text"
+        placeholder="https://app.mokahr.com/candidates/application/{id}/more-info"
+      />
+
+      <div class="row">
+        <div>
+          <label>保存子文件夹</label>
+          <input id="folder" type="text" placeholder="mokahr-words" />
+        </div>
+        <div>
+          <label>每个ID等待（秒）</label>
+          <input id="delaySec" type="number" min="1" max="60" step="1" />
+        </div>
+      </div>
+
+      <div class="btns">
+        <button id="start" class="primary">Start</button>
+        <button id="stop" class="danger">Stop</button>
+      </div>
+
+      <div class="hint">
+        - 表格建议列顺序：申请ID、应聘职位名称、姓名（无表头时按此顺序解析）；如有表头则会按表头名自动识别。<br />
+        - 需要你已登录 MokaHR，否则页面打不开/无下载按钮。
+      </div>
+
+      <div id="status" class="status mono">等待导入…</div>
+    </div>
+
+    <!-- SheetJS (XLSX parser) - minified build -->
+    <script src="xlsx.full.min.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
+
